@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:expense_organizer/components/chart.dart';
 import 'package:flutter/material.dart';
 
 import 'package:expense_organizer/models/transaction.dart';
@@ -51,21 +52,31 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final List<Transaction> _transactions = [
-    // Transaction(
-    //     id: 't1',
-    //     title: 'Tênis de corrida',
-    //     value: 499.99,
-    //     date: DateTime.now()),
-    // Transaction(
-    //     id: 't2',
-    //     title: 'Conta de energia',
-    //     value: 121.50,
-    //     date: DateTime.now()),
-    // Transaction(
-    //     id: 't3', title: 'Despesa #03', value: 121.50, date: DateTime.now()),
-    // Transaction(
-    //     id: 't4', title: 'Despesa #04', value: 150.00, date: DateTime.now()),
+    Transaction(
+      id: 't1',
+      title: 'Tênis de corrida',
+      value: 499.99,
+      date: DateTime.now().subtract(Duration(days: 3)),
+    ),
+    Transaction(
+      id: 't2',
+      title: 'Conta de energia',
+      value: 121.50,
+      date: DateTime.now().subtract(Duration(days: 2)),
+    ),
+    Transaction(
+      id: 't3',
+      title: 'Supermercado do mês',
+      value: 121.50,
+      date: DateTime.now().subtract(Duration(days: 33)),
+    ),
   ];
+
+  List<Transaction> get _recentTransactions {
+    return _transactions.where((tr) {
+      return tr.date.isAfter(DateTime.now().subtract(Duration(days: 7)));
+    }).toList();
+  }
 
   _addTransaction(String title, double value) {
     final newTransaction = Transaction(
@@ -105,11 +116,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Container(
-              child: const Card(
-                child: Text('Gráfico'),
-              ),
-            ),
+            Chart(recentTransactions: _recentTransactions),
             TransactionList(transactions: _transactions),
           ],
         ),
