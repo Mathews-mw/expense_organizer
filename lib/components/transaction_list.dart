@@ -5,8 +5,12 @@ import '../models/transaction.dart';
 
 class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
+  final void Function(String id) onRemoveTransaction;
 
-  const TransactionList({super.key, required this.transactions});
+  TransactionList(
+      {super.key,
+      required this.transactions,
+      required this.onRemoveTransaction});
 
   @override
   Widget build(BuildContext context) {
@@ -34,38 +38,28 @@ class TransactionList extends StatelessWidget {
                 final transaction = transactions[index];
 
                 return Card(
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 15, vertical: 10),
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Theme.of(context).colorScheme.primary,
-                                width: 2)),
-                        padding: const EdgeInsets.all(10),
-                        child: Text(
-                          'R\$ ${transaction.value.toStringAsFixed(2)}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Theme.of(context).colorScheme.primary),
+                  elevation: 2,
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      radius: 30,
+                      child: Padding(
+                        padding: const EdgeInsets.all(6),
+                        child: FittedBox(
+                          child: Text('R\$${transaction.value}'),
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            transaction.title,
-                            style: Theme.of(context).textTheme.headlineLarge,
-                          ),
-                          Text(
-                            DateFormat('d MMM y').format(transaction.date),
-                            style: TextStyle(color: Colors.grey[600]),
-                          ),
-                        ],
-                      ),
-                    ],
+                    ),
+                    title: Text(
+                      transaction.title,
+                      style: Theme.of(context).textTheme.headlineLarge,
+                    ),
+                    subtitle:
+                        Text(DateFormat('d MMM y').format(transaction.date)),
+                    trailing: IconButton(
+                        onPressed: () => onRemoveTransaction(transaction.id),
+                        icon: const Icon(Icons.delete_forever)),
+                    iconColor: Theme.of(context).colorScheme.error,
                   ),
                 );
               },
