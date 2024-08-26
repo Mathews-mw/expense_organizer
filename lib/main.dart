@@ -54,41 +54,41 @@ class _HomePageState extends State<HomePage> {
   bool _showChart = false;
 
   final List<Transaction> _transactions = [
-    Transaction(
-        id: Random().nextDouble().toString(),
-        title: 'Transação 01',
-        value: 210.50,
-        date: DateTime.now()),
-    Transaction(
-        id: Random().nextDouble().toString(),
-        title: 'Transação 02',
-        value: 80.20,
-        date: DateTime.now().subtract(const Duration(days: 3))),
-    Transaction(
-        id: Random().nextDouble().toString(),
-        title: 'Transação 03',
-        value: 2110.29,
-        date: DateTime.now().subtract(const Duration(days: 4))),
-    Transaction(
-        id: Random().nextDouble().toString(),
-        title: 'Transação 04',
-        value: 548.50,
-        date: DateTime.now().subtract(const Duration(days: 2))),
-    Transaction(
-        id: Random().nextDouble().toString(),
-        title: 'Transação 05',
-        value: 45.50,
-        date: DateTime.now()),
-    Transaction(
-        id: Random().nextDouble().toString(),
-        title: 'Transação 06',
-        value: 310.50,
-        date: DateTime.now().subtract(const Duration(days: 1))),
-    Transaction(
-        id: Random().nextDouble().toString(),
-        title: 'Transação 07',
-        value: 197.50,
-        date: DateTime.now().subtract(const Duration(days: 2))),
+    // Transaction(
+    //     id: Random().nextDouble().toString(),
+    //     title: 'Transação 01',
+    //     value: 210.50,
+    //     date: DateTime.now()),
+    // Transaction(
+    //     id: Random().nextDouble().toString(),
+    //     title: 'Transação 02',
+    //     value: 80.20,
+    //     date: DateTime.now().subtract(const Duration(days: 3))),
+    // Transaction(
+    //     id: Random().nextDouble().toString(),
+    //     title: 'Transação 03',
+    //     value: 2110.29,
+    //     date: DateTime.now().subtract(const Duration(days: 4))),
+    // Transaction(
+    //     id: Random().nextDouble().toString(),
+    //     title: 'Transação 04',
+    //     value: 548.50,
+    //     date: DateTime.now().subtract(const Duration(days: 2))),
+    // Transaction(
+    //     id: Random().nextDouble().toString(),
+    //     title: 'Transação 05',
+    //     value: 45.50,
+    //     date: DateTime.now()),
+    // Transaction(
+    //     id: Random().nextDouble().toString(),
+    //     title: 'Transação 06',
+    //     value: 310.50,
+    //     date: DateTime.now().subtract(const Duration(days: 1))),
+    // Transaction(
+    //     id: Random().nextDouble().toString(),
+    //     title: 'Transação 07',
+    //     value: 197.50,
+    //     date: DateTime.now().subtract(const Duration(days: 2))),
   ];
 
   List<Transaction> get _recentTransactions {
@@ -130,20 +130,33 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    bool isLandscape = mediaQuery.orientation == Orientation.landscape;
+
     final appBar = AppBar(
       title: const Text('Despesas Pessoais'),
       actions: <Widget>[
+        if (isLandscape)
+          IconButton(
+            icon: Icon(_showChart ? Icons.list : Icons.bar_chart),
+            onPressed: () {
+              setState(() {
+                _showChart = !_showChart;
+              });
+            },
+          ),
         IconButton(
-            onPressed: () => _openTransactionFormModal(context),
-            icon: const Icon(Icons.add))
+          onPressed: () => _openTransactionFormModal(context),
+          icon: const Icon(Icons.add),
+        )
       ],
     );
 
     final appBarHeight = appBar.preferredSize.height;
-    final statusBardHeight = MediaQuery.of(context).padding.top;
+    final statusBardHeight = mediaQuery.padding.top;
 
     final availableSize =
-        MediaQuery.of(context).size.height - appBarHeight - statusBardHeight;
+        mediaQuery.size.height - appBarHeight - statusBardHeight;
 
     return Scaffold(
       appBar: appBar,
@@ -151,23 +164,9 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                const Text('Exibir gráfico',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                Switch(
-                    value: _showChart,
-                    onChanged: (value) {
-                      setState(() {
-                        _showChart = value;
-                      });
-                    })
-              ],
-            ),
-            if (_showChart)
+            if (_showChart || !isLandscape)
               Container(
-                  height: availableSize * 0.3,
+                  height: availableSize * (isLandscape ? 0.6 : 0.3),
                   child: Chart(recentTransactions: _recentTransactions)),
             Container(
               height: availableSize * 0.7,
@@ -183,7 +182,7 @@ class _HomePageState extends State<HomePage> {
         child: const Icon(Icons.add),
         onPressed: () => _openTransactionFormModal(context),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
