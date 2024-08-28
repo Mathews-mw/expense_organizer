@@ -1,3 +1,6 @@
+import 'package:expense_organizer/components/adaptive_button.dart';
+import 'package:expense_organizer/components/adaptive_textfield.dart';
+import 'package:expense_organizer/components/adptive_datepicker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -5,7 +8,7 @@ import 'package:intl/intl.dart';
 class TransactionForm extends StatefulWidget {
   final void Function(String, double, DateTime) onSubmit;
 
-  TransactionForm({super.key, required this.onSubmit});
+  const TransactionForm({super.key, required this.onSubmit});
 
   @override
   State<TransactionForm> createState() => _TransactionFormState();
@@ -28,23 +31,6 @@ class _TransactionFormState extends State<TransactionForm> {
     widget.onSubmit(title, value, _selectedDate);
   }
 
-  _showDatePicker() {
-    showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now().subtract(const Duration(days: 365 * 2)),
-      lastDate: DateTime.now(),
-    ).then((pickedDate) {
-      if (pickedDate == null) {
-        return;
-      }
-
-      setState(() {
-        _selectedDate = pickedDate;
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -60,47 +46,33 @@ class _TransactionFormState extends State<TransactionForm> {
               ),
               child: Column(
                 children: <Widget>[
-                  TextField(
+                  AdaptiveTextfield(
                     controller: transactionTitleController,
-                    decoration: const InputDecoration(labelText: 'Título'),
+                    label: 'Título',
+                    onSubmitted: (_) => _submitForm(),
                   ),
-                  TextField(
+                  AdaptiveTextfield(
                     controller: transactionValueController,
                     keyboardType: const TextInputType.numberWithOptions(
                         decimal:
                             true), // numberWithOptions -> para que as opções no teclado do ios funcione
                     onSubmitted: (_) => _submitForm(),
-                    decoration: const InputDecoration(labelText: 'Valor (R\$)'),
+                    label: 'Valor (R\$)',
                   ),
-                  Container(
-                    height: 70,
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Text(
-                            _selectedDate == null
-                                ? 'Nenhuma data selecionada'
-                                : DateFormat('dd/MM/y').format(_selectedDate!),
-                          ),
-                        ),
-                        TextButton(
-                            onPressed: _showDatePicker,
-                            child: Text(
-                              'Selecionar Data',
-                              style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary),
-                            ))
-                      ],
-                    ),
-                  ),
+                  AdptiveDatepicker(
+                      selectedDate: _selectedDate,
+                      onDateChanged: (date) {
+                        setState(() {
+                          _selectedDate = date;
+                        });
+                      }),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
-                      ElevatedButton(
-                          onPressed: _submitForm,
-                          child: const Text(
-                            'Nova Transação',
-                          ))
+                      AdaptiveButton(
+                        label: 'Nova Transação',
+                        onPressed: _submitForm,
+                      ),
                     ],
                   )
                 ],
